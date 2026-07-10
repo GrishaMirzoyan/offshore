@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offshore — Dashboard</title>
+<meta name="description" content="Your entities, accounts, and filings. Exactly this uneventful, which is the entire point.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBFAF7;
+    --paper: #FFFFFF;
+    --ink: #10203A;
+    --ink-dim: #51617C;
+    --ink-faint: #8695AD;
+    --line: rgba(16, 32, 58, 0.09);
+    --line-strong: rgba(16, 32, 58, 0.16);
+    --gold: #B4802F;
+    --gold-deep: #9A6C24;
+    --gold-bright: #DCA45C;
+    --gold-soft: rgba(180, 128, 47, 0.09);
+    --gold-line: rgba(180, 128, 47, 0.30);
+    --navy-950: #060D1A;
+    --navy-900: #0A1628;
+    --navy-800: #10213C;
+    --navy-ink: #EAF0F9;
+    --navy-dim: #A8B6CC;
+    --navy-line: rgba(214, 226, 245, 0.10);
+    --good: #1F8A5D;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --side-w: 236px;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--gold-bright); color: var(--navy-950); }
+
+  button { font-family: inherit; }
+  a { color: inherit; }
+
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- Sidebar ---------- */
+  .side {
+    width: var(--side-w);
+    flex: none;
+    border-right: 1px solid var(--line);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    padding: 26px 0 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .side-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 24px 26px;
+    text-decoration: none;
+  }
+  .side-brand .logo-mark { width: 27px; height: 27px; color: var(--ink); flex: none; }
+  .side-brand .logo-text {
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .side-role {
+    padding: 0 24px 22px;
+    margin-top: -18px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--gold-deep);
+  }
+  .side-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+  .side-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 13px;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-dim);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+    width: 100%;
+  }
+  .side-item svg { width: 16px; height: 16px; flex: none; opacity: 0.75; }
+  .side-item:hover { color: var(--ink); background: rgba(16, 32, 58, 0.04); }
+  .side-item.active {
+    color: var(--ink);
+    background: var(--gold-soft);
+    box-shadow: inset 2px 0 0 var(--gold);
+  }
+  .side-item.active svg { color: var(--gold-deep); opacity: 1; }
+  .side-item .count {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: rgba(16, 32, 58, 0.05);
+    border-radius: 999px;
+    padding: 1px 8px;
+  }
+
+  .side-foot { margin-top: auto; padding: 18px 24px 0; border-top: 1px solid var(--line); }
+  .side-foot .quiet-note {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .side-foot a {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink-dim);
+    text-decoration: none;
+    padding: 3px 0;
+  }
+  .side-foot a:hover { color: var(--gold-deep); }
+
+  /* ---------- Main column ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 62px;
+    padding: 0 32px;
+    background: rgba(251, 250, 247, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .menu-btn {
+    display: none;
+    width: 36px; height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--ink-dim);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+  .crumb { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+  .crumb .app-of { color: var(--ink-faint); font-style: italic; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .chip .dot-s { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip-good { color: var(--good); background: rgba(31, 138, 93, 0.08); border: 1px solid rgba(31, 138, 93, 0.22); }
+  .chip-warm { color: var(--gold-deep); background: var(--gold-soft); border: 1px solid var(--gold-line); }
+  .chip-dim  { color: var(--ink-dim); background: rgba(16, 32, 58, 0.04); border: 1px solid var(--line-strong); }
+
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--navy-900);
+    color: var(--gold-bright);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .content { padding: 34px 32px 60px; max-width: 1120px; width: 100%; margin: 0 auto; }
+
+  /* ---------- Views ---------- */
+  .view { display: none; }
+  .view.active { display: block; animation: viewIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes viewIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .view.active { animation: none; }
+  }
+
+  .view-head { margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  .view-head h1 { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1.15; }
+  .view-head .sub { font-size: 13.5px; color: var(--ink-faint); margin-top: 4px; }
+  .view-head .sub em { font-family: var(--serif); font-style: italic; color: var(--ink-dim); }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(16, 32, 58, 0.04);
+  }
+  .card-pad { padding: 22px 24px; }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 24px 0;
+    margin-bottom: 4px;
+  }
+  .card-head h3 {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-family: var(--sans);
+  }
+  .card-head .head-aux { font-size: 12px; color: var(--ink-faint); display: flex; align-items: center; gap: 12px; }
+  .card-head .link-btn,
+  .link-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gold-deep);
+    cursor: pointer;
+  }
+  .link-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .rows { padding: 6px 24px 8px; }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+  }
+  .row:first-child { border-top: none; }
+  .row .primary { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+  .row .secondary { font-size: 12px; color: var(--ink-faint); margin-top: 1px; }
+  .card-foot {
+    margin: 4px 24px 0;
+    padding: 12px 0 16px;
+    border-top: 1px dashed var(--line-strong);
+    font-size: 12.5px;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  /* Overview layout */
+  .ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .ov-grid .wide { grid-column: 1 / -1; }
+
+  .amount { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13.5px; color: var(--ink); white-space: nowrap; }
+  .amount.masked { letter-spacing: 2px; color: var(--ink-faint); }
+  .eye-btn {
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    border-radius: 8px;
+    width: 30px; height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .eye-btn:hover { border-color: var(--gold-line); color: var(--gold-deep); }
+  .eye-btn svg { width: 14px; height: 14px; }
+
+  /* Activity */
+  .activity { padding: 8px 24px 18px; }
+  .act-item { display: flex; gap: 16px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .act-item:first-child { border-top: none; }
+  .act-date { flex: none; width: 64px; font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+  .act-body { font-size: 13.5px; color: var(--ink-dim); }
+  .act-body strong { color: var(--ink); font-weight: 500; }
+
+  /* Entities view */
+  .ent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .ent-card { padding: 24px 26px 20px; transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease; }
+  .ent-card:hover { border-color: var(--gold-line); box-shadow: 0 10px 28px rgba(16, 32, 58, 0.07); transform: translateY(-2px); }
+  .ent-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+  .ent-card h3 { font-family: var(--serif); font-weight: 400; font-size: 20px; line-height: 1.25; }
+  .ent-card .juris { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 16px; }
+  .ent-card .juris em { font-family: var(--serif); font-style: italic; color: var(--gold-deep); }
+  .ent-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .fact .k { font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .fact .v { font-size: 13px; color: var(--ink); font-weight: 500; margin-top: 1px; }
+  .ent-next {
+    border-top: 1px dashed var(--line-strong);
+    padding-top: 12px;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+  }
+  .ent-next em { font-family: var(--serif); font-style: italic; }
+
+  /* Accounts view */
+  .acct-list { display: flex; flex-direction: column; gap: 14px; }
+  .acct-card { display: flex; align-items: center; gap: 20px; padding: 20px 24px; flex-wrap: wrap; }
+  .acct-flag {
+    flex: none;
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-line);
+    color: var(--gold-deep);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .acct-main { min-width: 180px; }
+  .acct-main .primary { font-size: 14.5px; font-weight: 500; }
+  .acct-main .secondary { font-size: 12.5px; color: var(--ink-faint); }
+  .acct-bal { margin-left: auto; text-align: right; }
+  .acct-bal .amount { font-size: 19px; font-weight: 500; font-family: var(--serif); }
+  .acct-bal .as-of { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* Filings view */
+  .filing-row { align-items: flex-start; }
+  .filing-when { flex: none; width: 86px; padding-top: 2px; }
+  .filing-when .d { font-family: var(--serif); font-size: 17px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .filing-when .m { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+  .filing-body { flex: 1; min-width: 200px; }
+  .filing-owner { font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; }
+  .filing-owner strong { color: var(--gold-deep); font-weight: 600; }
+
+  /* Documents view */
+  .doc-tools { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .doc-search {
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--paper);
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .doc-search:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
+  .doc-search::placeholder { color: var(--ink-faint); }
+  .doc-row { gap: 14px; }
+  .doc-ico { flex: none; width: 34px; height: 34px; border-radius: 9px; background: rgba(16, 32, 58, 0.04); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--ink-dim); }
+  .doc-ico svg { width: 15px; height: 15px; }
+  .doc-main { flex: 1; min-width: 160px; }
+  .doc-dl {
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+  }
+  .doc-dl:hover { border-color: var(--gold-line); color: var(--gold-deep); }
+  .doc-empty { padding: 30px 24px; font-family: var(--serif); font-style: italic; color: var(--ink-faint); font-size: 14.5px; display: none; }
+
+  /* Counsel view */
+  .counsel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .person { display: flex; gap: 16px; padding: 20px 22px; align-items: center; }
+  .person .avatar { width: 44px; height: 44px; font-size: 14px; }
+  .person .p-name { font-size: 14.5px; font-weight: 600; }
+  .person .p-role { font-size: 12.5px; color: var(--ink-faint); }
+  .person .p-city { margin-left: auto; text-align: right; }
+  .person .p-city .time { font-family: var(--serif); font-size: 19px; font-variant-numeric: tabular-nums; }
+  .person .p-city .city { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+
+  .thread { padding: 18px 24px 6px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 78%; }
+  .msg .bubble {
+    border-radius: 13px;
+    padding: 10px 15px;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .msg.them .bubble { background: rgba(16, 32, 58, 0.045); border: 1px solid var(--line); color: var(--ink); border-bottom-left-radius: 4px; }
+  .msg.me { align-self: flex-end; }
+  .msg.me .bubble { background: var(--navy-900); color: var(--navy-ink); border-bottom-right-radius: 4px; }
+  .msg .meta { font-size: 11px; color: var(--ink-faint); margin-top: 4px; padding: 0 4px; }
+  .msg.me .meta { text-align: right; }
+  .composer { display: flex; gap: 10px; padding: 16px 24px 20px; border-top: 1px solid var(--line); margin-top: 12px; }
+  .composer input {
+    flex: 1;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .composer input:focus { outline: none; border-color: var(--gold); background: var(--paper); box-shadow: 0 0 0 3px var(--gold-soft); }
+  .composer input::placeholder { color: var(--ink-faint); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 18px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--navy-900); color: #fff; }
+  .btn-primary:hover { background: var(--navy-800); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-strong); }
+  .btn-ghost:hover { border-color: var(--gold-line); color: var(--gold-deep); }
+
+  /* ---------- Responsive ---------- */
+  .scrim {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 13, 26, 0.4);
+    z-index: 90;
+  }
+  @media (max-width: 920px) {
+    .side {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 100;
+      background: var(--bg);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 0 60px rgba(6, 13, 26, 0.0);
+    }
+    .side.open { transform: none; box-shadow: 0 0 60px rgba(6, 13, 26, 0.25); }
+    body.side-open .scrim { display: block; }
+    .menu-btn { display: inline-flex; }
+    .topbar { padding: 0 20px; }
+    .content { padding: 26px 20px 50px; }
+    .ov-grid, .ent-grid, .counsel-grid { grid-template-columns: 1fr; }
+    .topbar .chip { display: none; }
+  }
+  @media (max-width: 560px) {
+    .view-head h1 { font-size: 25px; }
+    .acct-bal { margin-left: 0; text-align: left; width: 100%; }
+    .filing-when { width: 64px; }
+    .msg { max-width: 92%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="side" id="side">
+    <a href="index.html" class="side-brand" aria-label="Offshore — back to site">
+      <svg class="logo-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+        <circle cx="32" cy="32" r="29.3"/>
+        <path d="M6 30 C6 21 15 21 22 27 C29 33 35 39 42 39 C51 39 58 34 58 30 C58 26 51 21 42 21 C35 21 29 27 22 33 C15 39 6 39 6 30 Z"/>
+        <path d="M6 34 C6 25 15 25 22 31 C29 37 35 43 42 43 C51 43 58 38 58 34 C58 30 51 25 42 25 C35 25 29 31 22 37 C15 43 6 43 6 34 Z"/>
+      </svg>
+      <span class="logo-text">Offshore</span>
+    </a>
+    <p class="side-role">Client portal</p>
+
+    <nav class="side-nav" aria-label="Dashboard">
+      <button class="side-item active" data-view="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg>
+        Overview
+      </button>
+      <button class="side-item" data-view="entities">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v16M14 9h4a1 1 0 0 1 1 1v11"/><path d="M8 8h2M8 12h2M8 16h2"/></svg>
+        Entities <span class="count">4</span>
+      </button>
+      <button class="side-item" data-view="accounts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/></svg>
+        Accounts <span class="count">3</span>
+      </button>
+      <button class="side-item" data-view="filings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9.5 14.5 2 2 3.5-4"/></svg>
+        Filings <span class="count">3</span>
+      </button>
+      <button class="side-item" data-view="documents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7V5.5A1.5 1.5 0 0 1 5 4h4l2 2.5h8a1.5 1.5 0 0 1 1.5 1.5v10A1.5 1.5 0 0 1 19 19.5H5A1.5 1.5 0 0 1 3.5 18z"/></svg>
+        Documents
+      </button>
+      <button class="side-item" data-view="counsel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.4-2.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14.5H13"/></svg>
+        Counsel
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <p class="quiet-note">Nothing needs your attention. We'll write when that changes.</p>
+      <a href="index.html">← Back to offshore.com</a>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menu-btn" aria-label="Open menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="crumb"><span class="app-of">app.offshore.com /</span> <span id="crumb-view">Overview</span></div>
+      <div class="topbar-right">
+        <span class="chip chip-good"><span class="dot-s"></span>All clear — nothing due from you</span>
+        <span class="avatar" title="Elena Whitfield">EW</span>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="view active" data-view="overview">
+        <div class="view-head">
+          <div>
+            <h1 id="greeting">Good morning, Elena.</h1>
+            <p class="sub">Tuesday 8 July · Everything is where you left it. <em>Better, actually — we've been busy.</em></p>
+          </div>
+        </div>
+
+        <div class="ov-grid">
+          <div class="card">
+            <div class="card-head">
+              <h3>Entities</h3>
+              <span class="head-aux">4 active <button class="link-btn" data-go="entities">View all</button></span>
+            </div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">Alpine Ridge Holdings LLC</div>
+                  <div class="secondary">Wyoming, United States</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Good standing</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Meridian Ventures FZCO</div>
+                  <div class="secondary">Dubai, UAE</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Good standing</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Auriga Holdings Pte. Ltd.</div>
+                  <div class="secondary">Singapore</div>
+                </div>
+                <span class="chip chip-warm"><span class="dot-s"></span>Renewal in progress — ours</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Kestrel Family Trust</div>
+                  <div class="secondary">Nevis</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Good standing</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Accounts</h3>
+              <span class="head-aux">
+                3 connected
+                <button class="eye-btn" data-eye aria-label="Show balances" title="Show balances">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>
+                </button>
+              </span>
+            </div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">USD · Operating ·· 4821</div>
+                  <div class="secondary">Alpine Ridge Holdings LLC</div>
+                </div>
+                <span class="amount masked" data-bal="$412,806.19">••••••</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">AED · Treasury ·· 1107</div>
+                  <div class="secondary">Meridian Ventures FZCO</div>
+                </div>
+                <span class="amount masked" data-bal="AED 1,204,551.00">••••••</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">SGD · Holding ·· 9034</div>
+                  <div class="secondary">Auriga Holdings Pte. Ltd.</div>
+                </div>
+                <span class="amount masked" data-bal="S$268,930.44">••••••</span>
+              </div>
+            </div>
+            <div class="card-foot">Hidden by default. It's your money — it's nobody else's business.</div>
+          </div>
+
+          <div class="card wide">
+            <div class="card-head">
+              <h3>Upcoming filings</h3>
+              <span class="head-aux">Next 90 days <button class="link-btn" data-go="filings">View all</button></span>
+            </div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">Wyoming annual report</div>
+                  <div class="secondary">Due Sep 12 · Alpine Ridge Holdings LLC</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Prepared — filing this week</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">UAE economic substance notification</div>
+                  <div class="secondary">Due Oct 03 · Meridian Ventures FZCO</div>
+                </div>
+                <span class="chip chip-warm"><span class="dot-s"></span>On our desk</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Nevis trust renewal</div>
+                  <div class="secondary">Due Nov 20 · Kestrel Family Trust</div>
+                </div>
+                <span class="chip chip-dim">Scheduled</span>
+              </div>
+            </div>
+            <div class="card-foot">Your role in all of the above: none. We'll write when it's done.</div>
+          </div>
+
+          <div class="card wide">
+            <div class="card-head">
+              <h3>Recent activity</h3>
+              <span class="head-aux">Last 30 days</span>
+            </div>
+            <div class="activity">
+              <div class="act-item">
+                <span class="act-date">Jul 07</span>
+                <span class="act-body"><strong>Renewal fee paid to ACRA</strong> — Auriga Holdings Pte. Ltd. Confirmation expected within the week.</span>
+              </div>
+              <div class="act-item">
+                <span class="act-date">Jul 02</span>
+                <span class="act-body"><strong>Wyoming annual report prepared</strong> — Alpine Ridge Holdings LLC. Queued for our filing window.</span>
+              </div>
+              <div class="act-item">
+                <span class="act-date">Jun 24</span>
+                <span class="act-body"><strong>Document added</strong> — Certificate of Incumbency, Meridian Ventures FZCO.</span>
+              </div>
+              <div class="act-item">
+                <span class="act-date">Jun 18</span>
+                <span class="act-body"><strong>UAE ESR notification drafted</strong> — with counsel for review. Not your problem.</span>
+              </div>
+              <div class="act-item">
+                <span class="act-date">Jun 05</span>
+                <span class="act-body"><strong>Quarterly structure review completed</strong> — no changes recommended. The best kind of review.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ENTITIES ============ -->
+      <section class="view" data-view="entities">
+        <div class="view-head">
+          <div>
+            <h1>Entities</h1>
+            <p class="sub">Four structures, three continents, <em>zero deadlines that are yours.</em></p>
+          </div>
+          <a class="btn btn-ghost" href="index.html#book">Discuss a new entity</a>
+        </div>
+
+        <div class="ent-grid">
+          <div class="card ent-card">
+            <div class="ent-top">
+              <h3>Alpine Ridge Holdings LLC</h3>
+              <span class="chip chip-good"><span class="dot-s"></span>Good standing</span>
+            </div>
+            <p class="juris">Wyoming, United States · <em>41.14° N, 104.82° W</em></p>
+            <div class="ent-facts">
+              <div class="fact"><div class="k">Type</div><div class="v">Limited Liability Co.</div></div>
+              <div class="fact"><div class="k">Formed</div><div class="v">March 2024</div></div>
+              <div class="fact"><div class="k">Registered agent</div><div class="v">Handled by us</div></div>
+              <div class="fact"><div class="k">Next renewal</div><div class="v">Sep 12, 2026</div></div>
+            </div>
+            <p class="ent-next">Next action: annual report, Sep 12 — <em>prepared, ours to file.</em></p>
+          </div>
+
+          <div class="card ent-card">
+            <div class="ent-top">
+              <h3>Meridian Ventures FZCO</h3>
+              <span class="chip chip-good"><span class="dot-s"></span>Good standing</span>
+            </div>
+            <p class="juris">Dubai, United Arab Emirates · <em>25.20° N, 55.27° E</em></p>
+            <div class="ent-facts">
+              <div class="fact"><div class="k">Type</div><div class="v">Free Zone Company</div></div>
+              <div class="fact"><div class="k">Formed</div><div class="v">June 2024</div></div>
+              <div class="fact"><div class="k">Licence</div><div class="v">Holding · valid 2027</div></div>
+              <div class="fact"><div class="k">Next filing</div><div class="v">ESR · Oct 03, 2026</div></div>
+            </div>
+            <p class="ent-next">Next action: economic substance notification — <em>drafted, with counsel.</em></p>
+          </div>
+
+          <div class="card ent-card">
+            <div class="ent-top">
+              <h3>Auriga Holdings Pte. Ltd.</h3>
+              <span class="chip chip-warm"><span class="dot-s"></span>Renewal in progress</span>
+            </div>
+            <p class="juris">Singapore · <em>1.35° N, 103.82° E</em></p>
+            <div class="ent-facts">
+              <div class="fact"><div class="k">Type</div><div class="v">Private Limited</div></div>
+              <div class="fact"><div class="k">Formed</div><div class="v">September 2024</div></div>
+              <div class="fact"><div class="k">Corp. secretary</div><div class="v">Handled by us</div></div>
+              <div class="fact"><div class="k">Renewal</div><div class="v">Fee paid Jul 07</div></div>
+            </div>
+            <p class="ent-next">Renewal underway with ACRA. <em>You'll hear from us when it's boring again.</em></p>
+          </div>
+
+          <div class="card ent-card">
+            <div class="ent-top">
+              <h3>Kestrel Family Trust</h3>
+              <span class="chip chip-good"><span class="dot-s"></span>Good standing</span>
+            </div>
+            <p class="juris">Nevis · <em>17.15° N, 62.58° W</em></p>
+            <div class="ent-facts">
+              <div class="fact"><div class="k">Type</div><div class="v">International Trust</div></div>
+              <div class="fact"><div class="k">Settled</div><div class="v">November 2024</div></div>
+              <div class="fact"><div class="k">Trustee</div><div class="v">Licensed · Nevis</div></div>
+              <div class="fact"><div class="k">Next renewal</div><div class="v">Nov 20, 2026</div></div>
+            </div>
+            <p class="ent-next">Annual renewal scheduled. <em>Trusts reward patience and paperwork. We supply both.</em></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ACCOUNTS ============ -->
+      <section class="view" data-view="accounts">
+        <div class="view-head">
+          <div>
+            <h1>Accounts</h1>
+            <p class="sub">Three currencies, three banks, <em>one login. This one.</em></p>
+          </div>
+          <button class="btn btn-ghost" data-eye>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>
+            <span data-eye-label>Show balances</span>
+          </button>
+        </div>
+
+        <div class="acct-list">
+          <div class="card acct-card">
+            <div class="acct-flag">USD</div>
+            <div class="acct-main">
+              <div class="primary">Operating ·· 4821</div>
+              <div class="secondary">Alpine Ridge Holdings LLC · Jackson, WY</div>
+            </div>
+            <span class="chip chip-dim">Connected</span>
+            <div class="acct-bal">
+              <div class="amount masked" data-bal="$412,806.19">••••••••</div>
+              <div class="as-of">as of this morning</div>
+            </div>
+          </div>
+          <div class="card acct-card">
+            <div class="acct-flag">AED</div>
+            <div class="acct-main">
+              <div class="primary">Treasury ·· 1107</div>
+              <div class="secondary">Meridian Ventures FZCO · DIFC, Dubai</div>
+            </div>
+            <span class="chip chip-dim">Connected</span>
+            <div class="acct-bal">
+              <div class="amount masked" data-bal="AED 1,204,551.00">••••••••</div>
+              <div class="as-of">as of this morning</div>
+            </div>
+          </div>
+          <div class="card acct-card">
+            <div class="acct-flag">SGD</div>
+            <div class="acct-main">
+              <div class="primary">Holding ·· 9034</div>
+              <div class="secondary">Auriga Holdings Pte. Ltd. · Raffles Place</div>
+            </div>
+            <span class="chip chip-dim">Connected</span>
+            <div class="acct-bal">
+              <div class="amount masked" data-bal="S$268,930.44">••••••••</div>
+              <div class="as-of">as of this morning</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 18px;">
+          <div class="card-foot" style="border-top: none; margin-top: 0; padding-top: 16px;">
+            Balances are read-only mirrors from your banks. We can see that they exist;
+            we cannot move a cent. <em>That distinction matters, and it's permanent.</em>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FILINGS ============ -->
+      <section class="view" data-view="filings">
+        <div class="view-head">
+          <div>
+            <h1>Filings</h1>
+            <p class="sub">Every deadline, every jurisdiction. <em>Note whose desk they're on.</em></p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-head"><h3>Upcoming</h3><span class="head-aux">Next 90 days</span></div>
+          <div class="rows">
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">12</div><div class="m">Sep 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Wyoming annual report</div>
+                <div class="secondary">Alpine Ridge Holdings LLC · Secretary of State</div>
+                <div class="filing-owner">On <strong>our</strong> desk · prepared Jul 02</div>
+              </div>
+              <span class="chip chip-good"><span class="dot-s"></span>Prepared</span>
+            </div>
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">03</div><div class="m">Oct 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Economic substance notification</div>
+                <div class="secondary">Meridian Ventures FZCO · UAE Ministry of Finance</div>
+                <div class="filing-owner">On <strong>our</strong> desk · drafted Jun 18, with counsel</div>
+              </div>
+              <span class="chip chip-warm"><span class="dot-s"></span>In review</span>
+            </div>
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">20</div><div class="m">Nov 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Trust renewal &amp; registrar fee</div>
+                <div class="secondary">Kestrel Family Trust · Nevis Financial Services</div>
+                <div class="filing-owner">On <strong>our</strong> desk · scheduled</div>
+              </div>
+              <span class="chip chip-dim">Scheduled</span>
+            </div>
+          </div>
+          <div class="card-foot">Items requiring anything from you: none. As designed.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Filed</h3><span class="head-aux">Last 12 months</span></div>
+          <div class="rows">
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">28</div><div class="m">May 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Annual return</div>
+                <div class="secondary">Auriga Holdings Pte. Ltd. · ACRA, Singapore</div>
+              </div>
+              <span class="chip chip-good"><span class="dot-s"></span>Filed</span>
+            </div>
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">14</div><div class="m">Apr 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Registered agent renewal</div>
+                <div class="secondary">Alpine Ridge Holdings LLC · Wyoming</div>
+              </div>
+              <span class="chip chip-good"><span class="dot-s"></span>Done</span>
+            </div>
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">31</div><div class="m">Mar 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Corporate tax registration confirmation</div>
+                <div class="secondary">Meridian Ventures FZCO · UAE FTA</div>
+              </div>
+              <span class="chip chip-good"><span class="dot-s"></span>Filed</span>
+            </div>
+            <div class="row filing-row">
+              <div class="filing-when"><div class="d">20</div><div class="m">Jan 2026</div></div>
+              <div class="filing-body">
+                <div class="primary">Trust annual registrar fee</div>
+                <div class="secondary">Kestrel Family Trust · Nevis</div>
+              </div>
+              <span class="chip chip-good"><span class="dot-s"></span>Paid</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DOCUMENTS ============ -->
+      <section class="view" data-view="documents">
+        <div class="view-head">
+          <div>
+            <h1>Documents</h1>
+            <p class="sub">Everything signed, sealed, and searchable. <em>The originals sleep in three vaults.</em></p>
+          </div>
+        </div>
+
+        <div class="doc-tools">
+          <input class="doc-search" id="doc-search" type="search" placeholder="Search documents — try &quot;trust&quot; or &quot;Wyoming&quot;…" aria-label="Search documents">
+        </div>
+
+        <div class="card">
+          <div class="rows" id="doc-list">
+            <div class="row doc-row" data-text="articles of organization alpine ridge holdings llc wyoming">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Articles of Organization</div>
+                <div class="secondary">Alpine Ridge Holdings LLC · Mar 2024 · PDF, 1.2 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="operating agreement alpine ridge holdings llc wyoming">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Operating Agreement</div>
+                <div class="secondary">Alpine Ridge Holdings LLC · Mar 2024 · PDF, 2.8 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="ein assignment letter alpine ridge holdings llc irs wyoming">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">EIN Assignment Letter</div>
+                <div class="secondary">Alpine Ridge Holdings LLC · Apr 2024 · PDF, 0.3 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="trade licence meridian ventures fzco dubai uae">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Trade Licence</div>
+                <div class="secondary">Meridian Ventures FZCO · Jun 2024 · PDF, 0.9 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="certificate of incumbency meridian ventures fzco dubai uae">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Certificate of Incumbency</div>
+                <div class="secondary">Meridian Ventures FZCO · Jun 2026 · PDF, 0.4 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="certificate of incorporation auriga holdings singapore">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Certificate of Incorporation</div>
+                <div class="secondary">Auriga Holdings Pte. Ltd. · Sep 2024 · PDF, 0.6 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="acra annual return auriga holdings singapore">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">ACRA Annual Return — filed copy</div>
+                <div class="secondary">Auriga Holdings Pte. Ltd. · May 2026 · PDF, 1.1 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="trust deed kestrel family trust nevis">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Trust Deed</div>
+                <div class="secondary">Kestrel Family Trust · Nov 2024 · PDF, 3.4 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="letter of wishes kestrel family trust nevis">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Letter of Wishes</div>
+                <div class="secondary">Kestrel Family Trust · Nov 2024 · PDF, 0.2 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+            <div class="row doc-row" data-text="trustee resolution kestrel family trust nevis">
+              <div class="doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
+              <div class="doc-main">
+                <div class="primary">Trustee Resolution</div>
+                <div class="secondary">Kestrel Family Trust · Feb 2026 · PDF, 0.3 MB</div>
+              </div>
+              <button class="doc-dl" type="button">Download</button>
+            </div>
+          </div>
+          <p class="doc-empty" id="doc-empty">Nothing by that name. Either it doesn't exist, or it's filed under something more dignified.</p>
+        </div>
+      </section>
+
+      <!-- ============ COUNSEL ============ -->
+      <section class="view" data-view="counsel">
+        <div class="view-head">
+          <div>
+            <h1>Counsel</h1>
+            <p class="sub">Four people, four timezones. <em>It is never not business hours.</em></p>
+          </div>
+          <a class="btn btn-primary" href="index.html#book">Book a call</a>
+        </div>
+
+        <div class="counsel-grid">
+          <div class="card person">
+            <span class="avatar">AE</span>
+            <div>
+              <div class="p-name">Amira El-Sayed</div>
+              <div class="p-role">Corporate · UAE &amp; Gulf</div>
+            </div>
+            <div class="p-city" data-tz="Asia/Dubai">
+              <div class="time">–:–</div>
+              <div class="city">Dubai</div>
+            </div>
+          </div>
+          <div class="card person">
+            <span class="avatar">LB</span>
+            <div>
+              <div class="p-name">Lukas Brunner</div>
+              <div class="p-role">Banking &amp; treasury</div>
+            </div>
+            <div class="p-city" data-tz="Europe/Zurich">
+              <div class="time">–:–</div>
+              <div class="city">Zurich</div>
+            </div>
+          </div>
+          <div class="card person">
+            <span class="avatar">MD</span>
+            <div>
+              <div class="p-name">Marlon Douglas</div>
+              <div class="p-role">Trusts · Caribbean</div>
+            </div>
+            <div class="p-city" data-tz="America/St_Kitts">
+              <div class="time">–:–</div>
+              <div class="city">Nevis</div>
+            </div>
+          </div>
+          <div class="card person">
+            <span class="avatar">VO</span>
+            <div>
+              <div class="p-name">Valeria Ortiz</div>
+              <div class="p-role">Entities · Americas</div>
+            </div>
+            <div class="p-city" data-tz="America/Panama">
+              <div class="time">–:–</div>
+              <div class="city">Panama</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Messages</h3><span class="head-aux">Replies within one business day — theirs or yours, whichever comes first</span></div>
+          <div class="thread" id="thread">
+            <div class="msg them">
+              <div class="bubble">Morning Elena — Singapore renewal fee went to ACRA yesterday. Confirmation lands this week, then Auriga goes back to green. Nothing needed from you.</div>
+              <div class="meta">Amira · Jul 07, 09:12</div>
+            </div>
+            <div class="msg me">
+              <div class="bubble">Perfect, thank you. And the Wyoming report?</div>
+              <div class="meta">You · Jul 07, 09:40</div>
+            </div>
+            <div class="msg them">
+              <div class="bubble">Prepared and queued — we file in our window, well before the September deadline. You'll get a one-line note when it's done. That's the whole ceremony.</div>
+              <div class="meta">Amira · Jul 07, 09:44</div>
+            </div>
+          </div>
+          <div class="composer">
+            <input type="text" id="msg-input" placeholder="Write to counsel…" aria-label="Message counsel">
+            <button class="btn btn-primary" id="msg-send" type="button">Send</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  /* ---------- View routing ---------- */
+  const views = document.querySelectorAll('.view');
+  const items = document.querySelectorAll('.side-item');
+  const crumb = document.getElementById('crumb-view');
+  const side = document.getElementById('side');
+  function closeSide() { side.classList.remove('open'); document.body.classList.remove('side-open'); }
+  const titles = {
+    overview: 'Overview', entities: 'Entities', accounts: 'Accounts',
+    filings: 'Filings', documents: 'Documents', counsel: 'Counsel'
+  };
+
+  function show(view) {
+    if (!titles[view]) view = 'overview';
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === view));
+    items.forEach(i => i.classList.toggle('active', i.dataset.view === view));
+    crumb.textContent = titles[view];
+    document.title = 'Offshore — ' + titles[view];
+    closeSide();
+    window.scrollTo({ top: 0 });
+  }
+
+  items.forEach(i => i.addEventListener('click', () => {
+    history.replaceState(null, '', '#' + i.dataset.view);
+    show(i.dataset.view);
+  }));
+  document.querySelectorAll('[data-go]').forEach(el =>
+    el.addEventListener('click', () => {
+      history.replaceState(null, '', '#' + el.dataset.go);
+      show(el.dataset.go);
+    }));
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(location.hash.slice(1) || 'overview');
+
+  /* ---------- Greeting by time of day ---------- */
+  const h = new Date().getHours();
+  const part = h < 5 ? 'Up late' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').textContent =
+    (part === 'Up late' ? 'Up late, Elena.' : part + ', Elena.');
+  const subDate = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  document.querySelector('[data-view="overview"] .sub').innerHTML =
+    subDate + ' · Everything is where you left it. <em>Better, actually — we’ve been busy.</em>';
+
+  /* ---------- Balance visibility (shared across views) ---------- */
+  let balancesShown = false;
+  function renderBalances() {
+    document.querySelectorAll('[data-bal]').forEach(el => {
+      el.textContent = balancesShown ? el.dataset.bal : '•'.repeat(6);
+      el.classList.toggle('masked', !balancesShown);
+    });
+    document.querySelectorAll('[data-eye-label]').forEach(el =>
+      el.textContent = balancesShown ? 'Hide balances' : 'Show balances');
+    document.querySelectorAll('[data-eye]').forEach(btn => {
+      if (btn.classList.contains('eye-btn')) {
+        btn.setAttribute('aria-label', balancesShown ? 'Hide balances' : 'Show balances');
+        btn.title = balancesShown ? 'Hide balances' : 'Show balances';
+      }
+    });
+  }
+  document.querySelectorAll('[data-eye]').forEach(btn =>
+    btn.addEventListener('click', () => { balancesShown = !balancesShown; renderBalances(); }));
+  renderBalances();
+
+  /* ---------- Counsel clocks ---------- */
+  const cityEls = document.querySelectorAll('[data-tz]');
+  function tickClocks() {
+    const now = new Date();
+    cityEls.forEach(el => {
+      try {
+        el.querySelector('.time').textContent = new Intl.DateTimeFormat('en-GB', {
+          timeZone: el.dataset.tz, hour: '2-digit', minute: '2-digit', hour12: false
+        }).format(now);
+      } catch (e) { /* leave placeholder */ }
+    });
+  }
+  tickClocks();
+  setInterval(tickClocks, 10000);
+
+  /* ---------- Document search ---------- */
+  const docSearch = document.getElementById('doc-search');
+  const docRows = document.querySelectorAll('.doc-row');
+  const docEmpty = document.getElementById('doc-empty');
+  docSearch.addEventListener('input', () => {
+    const q = docSearch.value.trim().toLowerCase();
+    let hits = 0;
+    docRows.forEach(r => {
+      const match = !q || r.dataset.text.includes(q) || r.textContent.toLowerCase().includes(q);
+      r.style.display = match ? '' : 'none';
+      if (match) hits++;
+    });
+    docEmpty.style.display = hits ? 'none' : 'block';
+  });
+
+  /* Download buttons: demo only */
+  document.querySelectorAll('.doc-dl').forEach(b =>
+    b.addEventListener('click', () => {
+      const old = b.textContent;
+      b.textContent = 'Demo only';
+      b.disabled = true;
+      setTimeout(() => { b.textContent = old; b.disabled = false; }, 1400);
+    }));
+
+  /* ---------- Messages ---------- */
+  const thread = document.getElementById('thread');
+  const msgInput = document.getElementById('msg-input');
+  const nowStamp = () => new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  }).format(new Date()).replace(',', ' ·');
+
+  function addMsg(who, text, name) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + who;
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = name + ' · ' + nowStamp();
+    wrap.appendChild(bubble);
+    wrap.appendChild(meta);
+    thread.appendChild(wrap);
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+
+  function sendMsg() {
+    const text = msgInput.value.trim();
+    if (!text) return;
+    addMsg('me', text, 'You');
+    msgInput.value = '';
+    setTimeout(() => {
+      addMsg('them', 'Received — it’s on our desk now, which is where these things belong. We’ll come back to you within the day.', 'Amira');
+    }, 1300);
+  }
+  document.getElementById('msg-send').addEventListener('click', sendMsg);
+  msgInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+
+  /* ---------- Mobile sidebar ---------- */
+  const scrim = document.getElementById('scrim');
+  document.getElementById('menu-btn').addEventListener('click', () => {
+    side.classList.add('open');
+    document.body.classList.add('side-open');
+  });
+  scrim.addEventListener('click', closeSide);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSide(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offshore — Advisor</title>
+<meta name="description" content="Advisor workspace — the desk where the deadlines actually live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBFAF7;
+    --paper: #FFFFFF;
+    --ink: #10203A;
+    --ink-dim: #51617C;
+    --ink-faint: #8695AD;
+    --line: rgba(16, 32, 58, 0.09);
+    --line-strong: rgba(16, 32, 58, 0.16);
+    --gold: #B4802F;
+    --gold-deep: #9A6C24;
+    --gold-bright: #DCA45C;
+    --gold-soft: rgba(180, 128, 47, 0.09);
+    --gold-line: rgba(180, 128, 47, 0.30);
+    --navy-950: #060D1A;
+    --navy-900: #0A1628;
+    --navy-800: #10213C;
+    --navy-700: #182B4A;
+    --navy-ink: #EAF0F9;
+    --navy-dim: #A8B6CC;
+    --navy-faint: #6E7F9B;
+    --navy-line: rgba(214, 226, 245, 0.10);
+    --good: #1F8A5D;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --side-w: 236px;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--gold-bright); color: var(--navy-950); }
+
+  button { font-family: inherit; }
+  a { color: inherit; }
+
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- Sidebar (dark: this is the workbench) ---------- */
+  .side {
+    width: var(--side-w);
+    flex: none;
+    background: var(--navy-900);
+    color: var(--navy-ink);
+    display: flex;
+    flex-direction: column;
+    padding: 26px 0 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .side-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 24px 8px;
+    text-decoration: none;
+    color: var(--navy-ink);
+  }
+  .side-brand .logo-mark { width: 27px; height: 27px; color: var(--gold-bright); flex: none; }
+  .side-brand .logo-text {
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+  .side-role {
+    padding: 0 24px 24px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--gold-bright);
+  }
+  .side-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+  .side-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 13px;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--navy-dim);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+    width: 100%;
+  }
+  .side-item svg { width: 16px; height: 16px; flex: none; opacity: 0.75; }
+  .side-item:hover { color: var(--navy-ink); background: rgba(214, 226, 245, 0.05); }
+  .side-item.active {
+    color: var(--navy-ink);
+    background: rgba(220, 164, 92, 0.12);
+    box-shadow: inset 2px 0 0 var(--gold-bright);
+  }
+  .side-item.active svg { color: var(--gold-bright); opacity: 1; }
+  .side-item .count {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--navy-dim);
+    background: rgba(214, 226, 245, 0.08);
+    border-radius: 999px;
+    padding: 1px 8px;
+  }
+  .side-item .count.hot { color: var(--navy-950); background: var(--gold-bright); }
+
+  .side-foot { margin-top: auto; padding: 18px 24px 0; border-top: 1px solid var(--navy-line); }
+  .side-foot .quiet-note {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--navy-faint);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .side-foot a {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--navy-dim);
+    text-decoration: none;
+    padding: 3px 0;
+  }
+  .side-foot a:hover { color: var(--gold-bright); }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 62px;
+    padding: 0 32px;
+    background: rgba(251, 250, 247, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .menu-btn {
+    display: none;
+    width: 36px; height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--ink-dim);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+  .crumb { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+  .crumb .app-of { color: var(--ink-faint); font-style: italic; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .chip .dot-s { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip-good { color: var(--good); background: rgba(31, 138, 93, 0.08); border: 1px solid rgba(31, 138, 93, 0.22); }
+  .chip-warm { color: var(--gold-deep); background: var(--gold-soft); border: 1px solid var(--gold-line); }
+  .chip-dim  { color: var(--ink-dim); background: rgba(16, 32, 58, 0.04); border: 1px solid var(--line-strong); }
+
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--navy-900);
+    color: var(--gold-bright);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .content { padding: 34px 32px 60px; max-width: 1120px; width: 100%; margin: 0 auto; }
+
+  .view { display: none; }
+  .view.active { display: block; animation: viewIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes viewIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .view.active { animation: none; } }
+
+  .view-head { margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  .view-head h1 { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1.15; }
+  .view-head .sub { font-size: 13.5px; color: var(--ink-faint); margin-top: 4px; }
+  .view-head .sub em { font-family: var(--serif); font-style: italic; color: var(--ink-dim); }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(16, 32, 58, 0.04);
+  }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 24px 0;
+    margin-bottom: 4px;
+  }
+  .card-head h3 {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .card-head .head-aux { font-size: 12px; color: var(--ink-faint); }
+  .rows { padding: 6px 24px 8px; }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+  }
+  .row:first-child { border-top: none; }
+  .row .primary { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+  .row .secondary { font-size: 12px; color: var(--ink-faint); margin-top: 1px; }
+  .card-foot {
+    margin: 4px 24px 0;
+    padding: 12px 0 16px;
+    border-top: 1px dashed var(--line-strong);
+    font-size: 12.5px;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  /* Stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 18px; }
+  .tile { padding: 20px 22px 18px; }
+  .tile .t-num { font-family: var(--serif); font-size: 34px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tile .t-num em { font-style: normal; color: var(--gold-deep); }
+  .tile .t-label { font-size: 11px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: var(--ink-faint); margin-top: 6px; }
+  .tile .t-sub { font-size: 12px; color: var(--ink-dim); margin-top: 3px; }
+  .tile .t-sub em { font-family: var(--serif); font-style: italic; }
+
+  /* Desk tasks */
+  .task-row { align-items: flex-start; }
+  .task-client { flex: none; width: 150px; padding-top: 1px; }
+  .task-client .name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .task-client .ent { font-size: 11.5px; color: var(--ink-faint); }
+  .task-body { flex: 1; min-width: 200px; }
+  .task-due { font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+  .task-due strong { color: var(--gold-deep); font-weight: 600; }
+  .task-act {
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .task-act:hover { border-color: var(--gold-line); color: var(--gold-deep); background: var(--gold-soft); }
+  .task-row.done .primary { text-decoration: line-through; color: var(--ink-faint); }
+  .task-row.done .task-act { display: none; }
+
+  /* Clients table */
+  .client-tools { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .client-search {
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--paper);
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .client-search:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
+  .client-search::placeholder { color: var(--ink-faint); }
+  .client-row { gap: 14px; }
+  .client-row .avatar { width: 38px; height: 38px; font-size: 12.5px; background: var(--gold-soft); color: var(--gold-deep); border: 1px solid var(--gold-line); }
+  .client-main { flex: 1; min-width: 150px; }
+  .client-juris { font-size: 12px; color: var(--ink-faint); white-space: nowrap; }
+  .client-empty { padding: 30px 24px; font-family: var(--serif); font-style: italic; color: var(--ink-faint); font-size: 14.5px; display: none; }
+
+  /* Filings queue */
+  .queue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .queue-grid .wide { grid-column: 1 / -1; }
+
+  /* Messages */
+  .inbox-grid { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; }
+  .inbox-list { padding: 8px 0; }
+  .inbox-item {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-left: 2px solid transparent;
+    padding: 13px 20px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    align-items: flex-start;
+  }
+  .inbox-item:hover { background: rgba(16, 32, 58, 0.03); }
+  .inbox-item.active { background: var(--gold-soft); border-left-color: var(--gold); }
+  .inbox-item .avatar { width: 34px; height: 34px; font-size: 11.5px; }
+  .inbox-meta { min-width: 0; }
+  .inbox-meta .who { font-size: 13px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .inbox-meta .who .unread { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); flex: none; }
+  .inbox-meta .snippet {
+    font-size: 12px;
+    color: var(--ink-faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+  .inbox-meta .when { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+
+  .thread-card { display: flex; flex-direction: column; min-height: 420px; }
+  .thread-head { padding: 16px 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+  .thread-head .avatar { width: 32px; height: 32px; font-size: 11px; }
+  .thread-head .who { font-size: 13.5px; font-weight: 600; }
+  .thread-head .re { font-size: 12px; color: var(--ink-faint); }
+  .thread { padding: 18px 24px 6px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .msg { max-width: 78%; }
+  .msg .bubble {
+    border-radius: 13px;
+    padding: 10px 15px;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .msg.them .bubble { background: rgba(16, 32, 58, 0.045); border: 1px solid var(--line); color: var(--ink); border-bottom-left-radius: 4px; }
+  .msg.me { align-self: flex-end; }
+  .msg.me .bubble { background: var(--navy-900); color: var(--navy-ink); border-bottom-right-radius: 4px; }
+  .msg .meta { font-size: 11px; color: var(--ink-faint); margin-top: 4px; padding: 0 4px; }
+  .msg.me .meta { text-align: right; }
+  .composer { display: flex; gap: 10px; padding: 16px 24px 20px; border-top: 1px solid var(--line); margin-top: 12px; }
+  .composer input {
+    flex: 1;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .composer input:focus { outline: none; border-color: var(--gold); background: var(--paper); box-shadow: 0 0 0 3px var(--gold-soft); }
+  .composer input::placeholder { color: var(--ink-faint); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 18px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--navy-900); color: #fff; }
+  .btn-primary:hover { background: var(--navy-800); transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-strong); }
+  .btn-ghost:hover { border-color: var(--gold-line); color: var(--gold-deep); }
+
+  /* ---------- Responsive ---------- */
+  .scrim-el {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 13, 26, 0.4);
+    z-index: 90;
+  }
+  @media (max-width: 980px) {
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .queue-grid, .inbox-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 920px) {
+    .side {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .side.open { transform: none; box-shadow: 0 0 60px rgba(6, 13, 26, 0.35); }
+    body.side-open .scrim-el { display: block; }
+    .menu-btn { display: inline-flex; }
+    .topbar { padding: 0 20px; }
+    .content { padding: 26px 20px 50px; }
+    .topbar .chip { display: none; }
+  }
+  @media (max-width: 560px) {
+    .view-head h1 { font-size: 25px; }
+    .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tile { padding: 16px 16px 14px; }
+    .tile .t-num { font-size: 27px; }
+    .task-client { width: 100%; }
+    .task-row { flex-wrap: wrap; }
+    .msg { max-width: 92%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scrim-el" id="scrim"></div>
+
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="side" id="side">
+    <a href="index.html" class="side-brand" aria-label="Offshore — back to site">
+      <svg class="logo-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+        <circle cx="32" cy="32" r="29.3"/>
+        <path d="M6 30 C6 21 15 21 22 27 C29 33 35 39 42 39 C51 39 58 34 58 30 C58 26 51 21 42 21 C35 21 29 27 22 33 C15 39 6 39 6 30 Z"/>
+        <path d="M6 34 C6 25 15 25 22 31 C29 37 35 43 42 43 C51 43 58 38 58 34 C58 30 51 25 42 25 C35 25 29 31 22 37 C15 43 6 43 6 34 Z"/>
+      </svg>
+      <span class="logo-text">Offshore</span>
+    </a>
+    <p class="side-role">Advisor workspace</p>
+
+    <nav class="side-nav" aria-label="Advisor">
+      <button class="side-item active" data-view="today">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Today <span class="count hot" id="desk-count">3</span>
+      </button>
+      <button class="side-item" data-view="clients">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 19c0-3.3 2.9-5 6.5-5s6.5 1.7 6.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M17.5 14.2c2.4.4 4 1.9 4 4.3"/></svg>
+        Clients <span class="count">8</span>
+      </button>
+      <button class="side-item" data-view="filings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9.5 14.5 2 2 3.5-4"/></svg>
+        Filings queue <span class="count">5</span>
+      </button>
+      <button class="side-item" data-view="messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.4-2.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h7M8.5 14.5H13"/></svg>
+        Messages <span class="count hot">2</span>
+      </button>
+      <button class="side-item" data-view="compliance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5c0 4.8 3.2 8.4 7.5 10 4.3-1.6 7.5-5.2 7.5-10V6z"/><path d="m9 11.5 2 2 4-4.5"/></svg>
+        Compliance <span class="count">1</span>
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <p class="quiet-note">Clients sleep well because this desk doesn't.</p>
+      <a href="index.html">← Back to offshore.com</a>
+      <a href="login.html">Sign out</a>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menu-btn" aria-label="Open menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="crumb"><span class="app-of">advisor.offshore.com /</span> <span id="crumb-view">Today</span></div>
+      <div class="topbar-right">
+        <span class="chip chip-warm" id="desk-chip"><span class="dot-s"></span><span id="desk-chip-text">3 items on your desk</span></span>
+        <span class="avatar" title="Amira El-Sayed">AE</span>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============ TODAY ============ -->
+      <section class="view active" data-view="today">
+        <div class="view-head">
+          <div>
+            <h1 id="greeting">Good morning, Amira.</h1>
+            <p class="sub" id="today-sub">Tuesday 8 July · Three items on the desk. <em>All manageable before lunch.</em></p>
+          </div>
+        </div>
+
+        <div class="tiles">
+          <div class="card tile">
+            <div class="t-num">8</div>
+            <div class="t-label">Clients</div>
+            <div class="t-sub">All quiet. <em>As designed.</em></div>
+          </div>
+          <div class="card tile">
+            <div class="t-num"><em id="tile-desk">3</em></div>
+            <div class="t-label">On your desk</div>
+            <div class="t-sub">Due this fortnight</div>
+          </div>
+          <div class="card tile">
+            <div class="t-num">7</div>
+            <div class="t-label">Filings this quarter</div>
+            <div class="t-sub">5 filed · 2 in flight</div>
+          </div>
+          <div class="card tile">
+            <div class="t-num">1</div>
+            <div class="t-label">Compliance flag</div>
+            <div class="t-sub">Routine refresh. Not a drama.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Your desk</h3><span class="head-aux">Ordered by due date</span></div>
+          <div class="rows">
+            <div class="row task-row" data-task>
+              <div class="task-client"><div class="name">Elena Whitfield</div><div class="ent">Alpine Ridge Holdings LLC</div></div>
+              <div class="task-body">
+                <div class="primary">File Wyoming annual report</div>
+                <div class="secondary">Prepared Jul 02 · filing window open</div>
+                <div class="task-due">Due <strong>Sep 12</strong> · file this week per plan</div>
+              </div>
+              <button class="task-act" type="button">Mark filed</button>
+            </div>
+            <div class="row task-row" data-task>
+              <div class="task-client"><div class="name">Elena Whitfield</div><div class="ent">Meridian Ventures FZCO</div></div>
+              <div class="task-body">
+                <div class="primary">Review ESR notification draft</div>
+                <div class="secondary">Drafted Jun 18 · awaiting your sign-off</div>
+                <div class="task-due">Due <strong>Oct 03</strong> · review by Jul 15</div>
+              </div>
+              <button class="task-act" type="button">Mark reviewed</button>
+            </div>
+            <div class="row task-row" data-task>
+              <div class="task-client"><div class="name">Marcus Chen</div><div class="ent">Halcyon Digital Ltd · BVI</div></div>
+              <div class="task-body">
+                <div class="primary">Chase ACRA renewal confirmation</div>
+                <div class="secondary">Fee paid Jul 07 · registrar processing</div>
+                <div class="task-due">Check <strong>Jul 11</strong> · then close the loop with the client</div>
+              </div>
+              <button class="task-act" type="button">Mark done</button>
+            </div>
+          </div>
+          <div class="card-foot" id="desk-foot">Three things between eight clients and a perfectly boring quarter.</div>
+        </div>
+      </section>
+
+      <!-- ============ CLIENTS ============ -->
+      <section class="view" data-view="clients">
+        <div class="view-head">
+          <div>
+            <h1>Clients</h1>
+            <p class="sub">Eight names, twenty-three entities, <em>zero surprises pending.</em></p>
+          </div>
+        </div>
+
+        <div class="client-tools">
+          <input class="client-search" id="client-search" type="search" placeholder="Search clients — name or jurisdiction…" aria-label="Search clients">
+        </div>
+
+        <div class="card">
+          <div class="rows" id="client-list">
+            <div class="row client-row" data-text="elena whitfield wyoming uae singapore nevis">
+              <span class="avatar">EW</span>
+              <div class="client-main">
+                <div class="primary">Elena Whitfield</div>
+                <div class="secondary">4 entities · 3 accounts</div>
+              </div>
+              <span class="client-juris">WY · UAE · SG · Nevis</span>
+              <span class="chip chip-warm"><span class="dot-s"></span>2 on desk</span>
+            </div>
+            <div class="row client-row" data-text="marcus chen bvi singapore">
+              <span class="avatar">MC</span>
+              <div class="client-main">
+                <div class="primary">Marcus Chen</div>
+                <div class="secondary">3 entities · 2 accounts</div>
+              </div>
+              <span class="client-juris">BVI · SG</span>
+              <span class="chip chip-warm"><span class="dot-s"></span>1 on desk</span>
+            </div>
+            <div class="row client-row" data-text="sofia andersson cayman zurich switzerland">
+              <span class="avatar">SA</span>
+              <div class="client-main">
+                <div class="primary">Sofia Andersson</div>
+                <div class="secondary">2 entities · 2 accounts</div>
+              </div>
+              <span class="client-juris">Cayman · CH</span>
+              <span class="chip chip-good"><span class="dot-s"></span>All clear</span>
+            </div>
+            <div class="row client-row" data-text="rajan mehta dubai uae panama wyoming">
+              <span class="avatar">RM</span>
+              <div class="client-main">
+                <div class="primary">Rajan Mehta</div>
+                <div class="secondary">5 entities · 4 accounts</div>
+              </div>
+              <span class="client-juris">UAE · PA · WY</span>
+              <span class="chip chip-warm"><span class="dot-s"></span>KYC refresh due</span>
+            </div>
+            <div class="row client-row" data-text="isabelle fournier nevis zurich switzerland">
+              <span class="avatar">IF</span>
+              <div class="client-main">
+                <div class="primary">Isabelle Fournier</div>
+                <div class="secondary">2 entities · 1 account</div>
+              </div>
+              <span class="client-juris">Nevis · CH</span>
+              <span class="chip chip-good"><span class="dot-s"></span>All clear</span>
+            </div>
+            <div class="row client-row" data-text="tomi okafor wyoming dubai uae">
+              <span class="avatar">TO</span>
+              <div class="client-main">
+                <div class="primary">Tomi Okafor</div>
+                <div class="secondary">2 entities · 2 accounts</div>
+              </div>
+              <span class="client-juris">WY · UAE</span>
+              <span class="chip chip-good"><span class="dot-s"></span>All clear</span>
+            </div>
+            <div class="row client-row" data-text="henrik dahl singapore rarotonga cook islands">
+              <span class="avatar">HD</span>
+              <div class="client-main">
+                <div class="primary">Henrik Dahl</div>
+                <div class="secondary">3 entities · 2 accounts</div>
+              </div>
+              <span class="client-juris">SG · Cook Is.</span>
+              <span class="chip chip-good"><span class="dot-s"></span>All clear</span>
+            </div>
+            <div class="row client-row" data-text="amara osei cayman st kitts nevis">
+              <span class="avatar">AO</span>
+              <div class="client-main">
+                <div class="primary">Amara Osei</div>
+                <div class="secondary">2 entities · 1 account</div>
+              </div>
+              <span class="client-juris">Cayman · Nevis</span>
+              <span class="chip chip-good"><span class="dot-s"></span>All clear</span>
+            </div>
+          </div>
+          <p class="client-empty" id="client-empty">No client by that name. Which, in this business, is occasionally the correct answer.</p>
+        </div>
+      </section>
+
+      <!-- ============ FILINGS QUEUE ============ -->
+      <section class="view" data-view="filings">
+        <div class="view-head">
+          <div>
+            <h1>Filings queue</h1>
+            <p class="sub">Every deadline in the book, sorted by <em>whose move it is. It's always ours.</em></p>
+          </div>
+        </div>
+
+        <div class="queue-grid">
+          <div class="card">
+            <div class="card-head"><h3>In preparation</h3><span class="head-aux">2</span></div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">Cayman economic substance return</div>
+                  <div class="secondary">Sofia Andersson · due Dec 31</div>
+                </div>
+                <span class="chip chip-dim">Drafting</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Cook Islands trust annual review</div>
+                  <div class="secondary">Henrik Dahl · due Jan 15</div>
+                </div>
+                <span class="chip chip-dim">Gathering</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>In review</h3><span class="head-aux">2</span></div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">UAE ESR notification</div>
+                  <div class="secondary">Elena Whitfield · due Oct 03</div>
+                </div>
+                <span class="chip chip-warm"><span class="dot-s"></span>Your sign-off</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Panama foundation annual minutes</div>
+                  <div class="secondary">Rajan Mehta · due Sep 30</div>
+                </div>
+                <span class="chip chip-warm"><span class="dot-s"></span>With Valeria</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card wide">
+            <div class="card-head"><h3>Filing window open</h3><span class="head-aux">1 — the fun part</span></div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">Wyoming annual report — Alpine Ridge Holdings LLC</div>
+                  <div class="secondary">Elena Whitfield · prepared Jul 02 · due Sep 12</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>File this week</span>
+              </div>
+            </div>
+            <div class="card-foot">Filed early is filed forgotten. That's the standard.</div>
+          </div>
+
+          <div class="card wide">
+            <div class="card-head"><h3>Recently filed</h3><span class="head-aux">Last 90 days</span></div>
+            <div class="rows">
+              <div class="row">
+                <div>
+                  <div class="primary">ACRA annual return — Auriga Holdings Pte. Ltd.</div>
+                  <div class="secondary">Elena Whitfield · filed May 28</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Filed</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">BVI annual fee — Halcyon Digital Ltd</div>
+                  <div class="secondary">Marcus Chen · paid May 12</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Done</span>
+              </div>
+              <div class="row">
+                <div>
+                  <div class="primary">Registered agent renewal — Wyoming</div>
+                  <div class="secondary">Elena Whitfield · Apr 14</div>
+                </div>
+                <span class="chip chip-good"><span class="dot-s"></span>Done</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MESSAGES ============ -->
+      <section class="view" data-view="messages">
+        <div class="view-head">
+          <div>
+            <h1>Messages</h1>
+            <p class="sub">Two unread. <em>Both of them polite.</em></p>
+          </div>
+        </div>
+
+        <div class="inbox-grid">
+          <div class="card inbox-list" id="inbox"></div>
+
+          <div class="card thread-card">
+            <div class="thread-head">
+              <span class="avatar" id="thread-avatar">EW</span>
+              <div>
+                <div class="who" id="thread-who">Elena Whitfield</div>
+                <div class="re" id="thread-re">Wyoming · Singapore renewals</div>
+              </div>
+            </div>
+            <div class="thread" id="thread"></div>
+            <div class="composer">
+              <input type="text" id="msg-input" placeholder="Reply as counsel…" aria-label="Reply">
+              <button class="btn btn-primary" id="msg-send" type="button">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ COMPLIANCE ============ -->
+      <section class="view" data-view="compliance">
+        <div class="view-head">
+          <div>
+            <h1>Compliance</h1>
+            <p class="sub">The rigid part. <em>It's why the rest gets to be relaxed.</em></p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 18px;">
+          <div class="card-head"><h3>Needs attention</h3><span class="head-aux">1</span></div>
+          <div class="rows">
+            <div class="row">
+              <div>
+                <div class="primary">Source-of-wealth refresh — Rajan Mehta</div>
+                <div class="secondary">Documents dated 2024 · routine two-year cycle</div>
+              </div>
+              <span class="chip chip-warm"><span class="dot-s"></span>Due Aug 15</span>
+            </div>
+          </div>
+          <div class="card-foot">Routine. The exciting kind of compliance issue is the kind we don't have.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>KYC register</h3><span class="head-aux">Annual reviews</span></div>
+          <div class="rows">
+            <div class="row">
+              <div><div class="primary">Elena Whitfield</div><div class="secondary">Reviewed Mar 2026 · next Mar 2027</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Marcus Chen</div><div class="secondary">Reviewed Jan 2026 · next Jan 2027</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Sofia Andersson</div><div class="secondary">Reviewed May 2026 · next May 2027</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Rajan Mehta</div><div class="secondary">Reviewed Aug 2024 · refresh in progress</div></div>
+              <span class="chip chip-warm"><span class="dot-s"></span>Refresh due</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Isabelle Fournier</div><div class="secondary">Reviewed Jun 2026 · next Jun 2027</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Tomi Okafor</div><div class="secondary">Reviewed Feb 2026 · next Feb 2027</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Henrik Dahl</div><div class="secondary">Reviewed Apr 2026 · next Apr 2027</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Amara Osei</div><div class="secondary">Onboarded Nov 2025 · next Nov 2026</div></div>
+              <span class="chip chip-good"><span class="dot-s"></span>Current</span>
+            </div>
+          </div>
+          <div class="card-foot">Every client verified, every structure reportable. If they wanted to hide money, they'd have gone elsewhere — and been told the same thing there, ideally.</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  /* ---------- View routing ---------- */
+  const views = document.querySelectorAll('.view');
+  const items = document.querySelectorAll('.side-item');
+  const crumb = document.getElementById('crumb-view');
+  const side = document.getElementById('side');
+  function closeSide() { side.classList.remove('open'); document.body.classList.remove('side-open'); }
+  const titles = {
+    today: 'Today', clients: 'Clients', filings: 'Filings queue',
+    messages: 'Messages', compliance: 'Compliance'
+  };
+
+  function show(view) {
+    if (!titles[view]) view = 'today';
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === view));
+    items.forEach(i => i.classList.toggle('active', i.dataset.view === view));
+    crumb.textContent = titles[view];
+    document.title = 'Offshore — Advisor · ' + titles[view];
+    closeSide();
+    window.scrollTo({ top: 0 });
+  }
+
+  items.forEach(i => i.addEventListener('click', () => {
+    history.replaceState(null, '', '#' + i.dataset.view);
+    show(i.dataset.view);
+  }));
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(location.hash.slice(1) || 'today');
+
+  /* ---------- Greeting ---------- */
+  const h = new Date().getHours();
+  const part = h < 5 ? 'Up late' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').textContent =
+    (part === 'Up late' ? 'Up late, Amira.' : part + ', Amira.');
+  const subDate = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  document.getElementById('today-sub').innerHTML =
+    subDate + ' · Three items on the desk. <em>All manageable before lunch.</em>';
+
+  /* ---------- Desk tasks ---------- */
+  const deskCount = document.getElementById('desk-count');
+  const deskChipText = document.getElementById('desk-chip-text');
+  const deskChip = document.getElementById('desk-chip');
+  const tileDesk = document.getElementById('tile-desk');
+  const deskFoot = document.getElementById('desk-foot');
+  function updateDesk() {
+    const open = document.querySelectorAll('.task-row:not(.done)').length;
+    deskCount.textContent = open;
+    tileDesk.textContent = open;
+    deskChipText.textContent = open === 0 ? 'Desk clear' : open + (open === 1 ? ' item on your desk' : ' items on your desk');
+    if (open === 0) {
+      deskChip.classList.remove('chip-warm');
+      deskChip.classList.add('chip-good');
+      deskFoot.textContent = 'Desk clear. Eight clients, nothing pending. Go home — or don’t, Dubai’s just waking up.';
+    }
+  }
+  document.querySelectorAll('.task-row .task-act').forEach(btn =>
+    btn.addEventListener('click', () => {
+      btn.closest('.task-row').classList.add('done');
+      const chip = document.createElement('span');
+      chip.className = 'chip chip-good';
+      chip.innerHTML = '<span class="dot-s"></span>Done';
+      btn.closest('.task-row').appendChild(chip);
+      updateDesk();
+    }));
+  updateDesk();
+
+  /* ---------- Client search ---------- */
+  const clientSearch = document.getElementById('client-search');
+  const clientRows = document.querySelectorAll('.client-row');
+  const clientEmpty = document.getElementById('client-empty');
+  clientSearch.addEventListener('input', () => {
+    const q = clientSearch.value.trim().toLowerCase();
+    let hits = 0;
+    clientRows.forEach(r => {
+      const match = !q || r.dataset.text.includes(q) || r.textContent.toLowerCase().includes(q);
+      r.style.display = match ? '' : 'none';
+      if (match) hits++;
+    });
+    clientEmpty.style.display = hits ? 'none' : 'block';
+  });
+
+  /* ---------- Messages: inbox + threads ---------- */
+  const threadsData = {
+    elena: {
+      who: 'Elena Whitfield', initials: 'EW', re: 'Wyoming · Singapore renewals', when: 'Jul 07', unread: true,
+      msgs: [
+        { who: 'them', name: 'Elena', text: 'Morning Amira — saw the note about the Singapore fee. Anything you need from me for Wyoming?' },
+        { who: 'me', name: 'You', text: 'Nothing at all. Report’s prepared and queued; we file in our window, well before September. You’ll get a one-line note when it’s done.' },
+        { who: 'them', name: 'Elena', text: 'Perfect, thank you. And the Wyoming report?' }
+      ]
+    },
+    marcus: {
+      who: 'Marcus Chen', initials: 'MC', re: 'ACRA renewal', when: 'Jul 07', unread: true,
+      msgs: [
+        { who: 'them', name: 'Marcus', text: 'Hi Amira — did the ACRA payment go through OK? No rush, just keeping my inbox tidy.' }
+      ]
+    },
+    sofia: {
+      who: 'Sofia Andersson', initials: 'SA', re: 'Cayman ES return', when: 'Jul 03', unread: false,
+      msgs: [
+        { who: 'them', name: 'Sofia', text: 'Thanks for the quarterly summary. Genuinely nothing for me to do?' },
+        { who: 'me', name: 'You', text: 'Genuinely nothing. The Cayman return is drafting now; you’ll see it only after it’s filed. That’s the service.' }
+      ]
+    }
+  };
+  let currentThread = 'elena';
+  const inbox = document.getElementById('inbox');
+  const threadEl = document.getElementById('thread');
+
+  function renderInbox() {
+    inbox.innerHTML = '';
+    Object.entries(threadsData).forEach(([id, t]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'inbox-item' + (id === currentThread ? ' active' : '');
+      b.innerHTML =
+        '<span class="avatar">' + t.initials + '</span>' +
+        '<span class="inbox-meta">' +
+          '<span class="who">' + t.who + (t.unread ? '<span class="unread"></span>' : '') + '</span>' +
+          '<span class="snippet">' + t.msgs[t.msgs.length - 1].text + '</span>' +
+          '<span class="when">' + t.when + '</span>' +
+        '</span>';
+      b.addEventListener('click', () => { currentThread = id; t.unread = false; renderInbox(); renderThread(); updateUnread(); });
+      inbox.appendChild(b);
+    });
+  }
+  function renderThread() {
+    const t = threadsData[currentThread];
+    document.getElementById('thread-avatar').textContent = t.initials;
+    document.getElementById('thread-who').textContent = t.who;
+    document.getElementById('thread-re').textContent = t.re;
+    threadEl.innerHTML = '';
+    t.msgs.forEach(m => {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + m.who;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = m.text;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = m.name + ' · ' + t.when;
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+      threadEl.appendChild(wrap);
+    });
+  }
+  function updateUnread() {
+    const unread = Object.values(threadsData).filter(t => t.unread).length;
+    const badge = document.querySelector('[data-view="messages"].side-item .count') ||
+                  document.querySelector('.side-item[data-view="messages"] .count');
+    if (badge) {
+      badge.textContent = unread;
+      badge.classList.toggle('hot', unread > 0);
+    }
+  }
+
+  const msgInput = document.getElementById('msg-input');
+  function sendMsg() {
+    const text = msgInput.value.trim();
+    if (!text) return;
+    threadsData[currentThread].msgs.push({ who: 'me', name: 'You', text });
+    msgInput.value = '';
+    renderThread();
+    renderInbox();
+    threadEl.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+  document.getElementById('msg-send').addEventListener('click', sendMsg);
+  msgInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+  renderInbox();
+  renderThread();
+  updateUnread();
+
+  /* ---------- Mobile sidebar ---------- */
+  const scrim = document.getElementById('scrim');
+  document.getElementById('menu-btn').addEventListener('click', () => {
+    side.classList.add('open');
+    document.body.classList.add('side-open');
+  });
+  scrim.addEventListener('click', closeSide);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSide(); });
+</script>
+</body>
+</html>

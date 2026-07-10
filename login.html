@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offshore — Sign in</title>
+<meta name="description" content="Sign in to Offshore — client or advisor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBFAF7;
+    --paper: #FFFFFF;
+    --ink: #10203A;
+    --ink-dim: #51617C;
+    --ink-faint: #8695AD;
+    --line: rgba(16, 32, 58, 0.09);
+    --line-strong: rgba(16, 32, 58, 0.16);
+    --gold: #B4802F;
+    --gold-deep: #9A6C24;
+    --gold-bright: #DCA45C;
+    --gold-soft: rgba(180, 128, 47, 0.09);
+    --gold-line: rgba(180, 128, 47, 0.30);
+    --navy-950: #060D1A;
+    --navy-900: #0A1628;
+    --navy-800: #10213C;
+    --navy-ink: #EAF0F9;
+    --navy-dim: #A8B6CC;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    background: var(--navy-950);
+  }
+
+  ::selection { background: var(--gold-bright); color: var(--navy-950); }
+
+  .bg, .scrim { position: fixed; inset: 0; }
+  .bg {
+    background-image: url("assets/hero.webp");
+    background-size: cover;
+    background-position: center 40%;
+  }
+  .scrim {
+    background: linear-gradient(180deg, rgba(6, 13, 26, 0.66) 0%, rgba(6, 13, 26, 0.55) 50%, rgba(6, 13, 26, 0.78) 100%);
+  }
+
+  .top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px 34px;
+  }
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #FFFFFF;
+    text-decoration: none;
+    text-shadow: 0 1px 12px rgba(6, 13, 26, 0.5);
+  }
+  .wordmark .logo-mark { width: 30px; height: 30px; flex: none; filter: drop-shadow(0 1px 8px rgba(6, 13, 26, 0.5)); }
+  .wordmark .logo-text {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+  }
+  .top a.back {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(234, 240, 249, 0.85);
+    text-decoration: none;
+    text-shadow: 0 1px 10px rgba(6, 13, 26, 0.5);
+  }
+  .top a.back:hover { color: #FFFFFF; }
+
+  .stage {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px 60px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 470px;
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 44px 44px 38px;
+    box-shadow: 0 12px 40px rgba(6, 13, 26, 0.35), 0 48px 110px rgba(6, 13, 26, 0.45);
+    position: relative;
+  }
+  .auth-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 44px; right: 44px;
+    height: 3px;
+    background: var(--gold-bright);
+    border-radius: 0 0 3px 3px;
+  }
+
+  .auth-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .auth-card h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .auth-sub { font-size: 14px; color: var(--ink-dim); margin-bottom: 28px; }
+  .auth-sub em { font-family: var(--serif); font-style: italic; }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; animation: stepIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } }
+
+  /* Role picker */
+  .roles { display: grid; gap: 12px; }
+  .role {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    text-align: left;
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 13px;
+    padding: 18px 20px;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .role:hover {
+    border-color: var(--gold-line);
+    background: var(--paper);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(16, 32, 58, 0.1);
+  }
+  .role-ico {
+    flex: none;
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .role.client .role-ico { background: var(--gold-soft); border: 1px solid var(--gold-line); color: var(--gold-deep); }
+  .role.advisor .role-ico { background: var(--navy-900); border: 1px solid var(--navy-900); color: var(--gold-bright); }
+  .role-ico svg { width: 20px; height: 20px; }
+  .role h2 { font-family: var(--serif); font-weight: 400; font-size: 19px; line-height: 1.2; }
+  .role p { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; line-height: 1.5; }
+  .role .arrow { margin-left: auto; color: var(--ink-faint); transition: transform 0.2s ease, color 0.2s ease; font-size: 17px; }
+  .role:hover .arrow { transform: translateX(3px); color: var(--gold-deep); }
+
+  /* Login form */
+  .role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gold-deep);
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-line);
+    border-radius: 999px;
+    padding: 6px 8px 6px 14px;
+    margin-bottom: 24px;
+  }
+  .role-chip button {
+    border: none;
+    background: rgba(180, 128, 47, 0.12);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--gold-deep);
+    cursor: pointer;
+  }
+  .role-chip button:hover { background: rgba(180, 128, 47, 0.2); }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 12px 15px;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    color: var(--ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: var(--paper);
+    box-shadow: 0 0 0 3px var(--gold-soft);
+  }
+  .field input::placeholder { color: var(--ink-faint); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 22px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--navy-900);
+    color: #FFFFFF;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 2px rgba(10, 22, 40, 0.18), 0 6px 18px rgba(10, 22, 40, 0.12);
+  }
+  .btn:hover { background: var(--navy-800); transform: translateY(-1px); }
+  .btn .arrow { transition: transform 0.2s ease; }
+  .btn:hover .arrow { transform: translateX(3px); }
+
+  .aux-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 14px 2px 0;
+    font-size: 12.5px;
+  }
+  .aux-row a { color: var(--ink-dim); text-decoration: none; }
+  .aux-row a:hover { color: var(--gold-deep); }
+
+  .demo-note {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--line-strong);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+
+  .foot-note {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 20px 26px;
+    font-size: 12px;
+    color: rgba(234, 240, 249, 0.55);
+    text-shadow: 0 1px 10px rgba(6, 13, 26, 0.6);
+  }
+
+  @media (max-width: 520px) {
+    .top { padding: 20px 22px; }
+    .auth-card { padding: 34px 26px 30px; }
+    .auth-card::before { left: 26px; right: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"></div>
+<div class="scrim" aria-hidden="true"></div>
+
+<header class="top">
+  <a href="index.html" class="wordmark" aria-label="Offshore — home">
+    <svg class="logo-mark" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+      <circle cx="32" cy="32" r="29.3"/>
+      <path d="M6 30 C6 21 15 21 22 27 C29 33 35 39 42 39 C51 39 58 34 58 30 C58 26 51 21 42 21 C35 21 29 27 22 33 C15 39 6 39 6 30 Z"/>
+      <path d="M6 34 C6 25 15 25 22 31 C29 37 35 43 42 43 C51 43 58 38 58 34 C58 30 51 25 42 25 C35 25 29 31 22 37 C15 43 6 43 6 34 Z"/>
+    </svg>
+    <span class="logo-text">Offshore</span>
+  </a>
+  <a class="back" href="index.html">← Back to offshore.com</a>
+</header>
+
+<main class="stage">
+  <div class="auth-card">
+
+    <!-- Step 1: choose role -->
+    <section class="step active" data-step="role">
+      <p class="auth-kicker">Sign in</p>
+      <h1>Who's arriving?</h1>
+      <p class="auth-sub">Same firm, two very different desks. <em>Pick yours.</em></p>
+
+      <div class="roles">
+        <button class="role client" type="button" data-role="client">
+          <span class="role-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/></svg>
+          </span>
+          <span>
+            <h2>Client</h2>
+            <p>Your entities, accounts, and filings — exactly as uneventful as promised.</p>
+          </span>
+          <span class="arrow">→</span>
+        </button>
+
+        <button class="role advisor" type="button" data-role="advisor">
+          <span class="role-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7 3 12c0 1.4 1.3 2.5 3 2.5S9 13.4 9 12L7 7"/><path d="M17 7l-2 5c0 1.4 1.3 2.5 3 2.5s3-1.1 3-2.5l-2-5"/><path d="M8 21h8"/></svg>
+          </span>
+          <span>
+            <h2>Advisor</h2>
+            <p>The desk where the deadlines actually live. Counsel sign-in.</p>
+          </span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 2: credentials -->
+    <section class="step" data-step="login">
+      <p class="auth-kicker">Sign in</p>
+      <h1 id="login-title">Welcome back.</h1>
+      <p class="auth-sub" id="login-sub">The quiet room is through here.</p>
+
+      <p class="role-chip">
+        <span id="role-label">Client</span>
+        <button type="button" id="role-change">Change</button>
+      </p>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" placeholder="••••••••••" required>
+        </div>
+        <button class="btn" type="submit" id="login-btn">Sign in <span class="arrow">→</span></button>
+        <div class="aux-row">
+          <a href="#" onclick="return false;">Forgotten password?</a>
+          <a href="index.html#book">New here? Book a call</a>
+        </div>
+      </form>
+
+      <p class="demo-note">Demo — any email and password will do. The real thing is fussier.</p>
+    </section>
+
+  </div>
+</main>
+
+<p class="foot-note">Offshore is a fictional brand for a design exercise. Nothing here is legal, tax, or investment advice.</p>
+
+<script>
+  const steps = document.querySelectorAll('.step');
+  const roleLabel = document.getElementById('role-label');
+  const loginTitle = document.getElementById('login-title');
+  const loginSub = document.getElementById('login-sub');
+  const emailInput = document.getElementById('email');
+  let role = 'client';
+
+  const copy = {
+    client: {
+      label: 'Client',
+      title: 'Welcome back.',
+      sub: 'The quiet room is through here.',
+      placeholder: 'elena@example.com',
+      dest: 'dashboard.html'
+    },
+    advisor: {
+      label: 'Advisor',
+      title: 'Back to the desk.',
+      sub: 'Three things on it. All manageable.',
+      placeholder: 'amira@offshore.example',
+      dest: 'advisor.html'
+    }
+  };
+
+  function goStep(name) {
+    steps.forEach(s => s.classList.toggle('active', s.dataset.step === name));
+  }
+
+  document.querySelectorAll('[data-role]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      role = btn.dataset.role;
+      const c = copy[role];
+      roleLabel.textContent = c.label;
+      loginTitle.textContent = c.title;
+      loginSub.textContent = c.sub;
+      emailInput.placeholder = c.placeholder;
+      goStep('login');
+      setTimeout(() => emailInput.focus(), 60);
+    }));
+
+  document.getElementById('role-change').addEventListener('click', () => goStep('role'));
+
+  document.getElementById('login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    btn.textContent = 'Unlocking…';
+    btn.disabled = true;
+    setTimeout(() => { window.location.href = copy[role].dest; }, 500);
+  });
+</script>
+</body>
+</html>
