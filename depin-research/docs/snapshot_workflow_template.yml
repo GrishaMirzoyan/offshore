@@ -1,0 +1,33 @@
+# GitHub Actions template — daily Akash GPU price snapshot campaign.
+#
+# NOT active from this location. To enable, copy to
+# .github/workflows/depin-snapshot.yml in a repo of your choice (this one or a
+# dedicated data repo) and push. It commits one dated snapshot folder per day.
+# Enabling a scheduled workflow is deliberately left as a manual step.
+
+name: depin-daily-snapshot
+on:
+  schedule:
+    - cron: "5 0 * * *"   # 00:05 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pull snapshots
+        run: python3 depin-research/scripts/snapshot_gpu_prices.py
+      - name: Commit
+        run: |
+          git config user.name "depin-snapshot-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add depin-research/data/snapshots
+          git diff --cached --quiet || git commit -m "snapshot: $(date -u +%F)"
+          git push

@@ -1,0 +1,20 @@
+{
+  "dataset": "AWS EC2 on-demand GPU pricing, us-east-1, monthly offer versions",
+  "source": "AWS Price List Bulk API",
+  "endpoint": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/{version}/us-east-1/index.json",
+  "version_index": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/index.json",
+  "pull_date_utc": "2026-07-16T07:46:37.266485+00:00",
+  "instance_types": [
+    "p4d.24xlarge",
+    "p4de.24xlarge",
+    "p5.48xlarge",
+    "p5e.48xlarge",
+    "p5en.48xlarge",
+    "p6-b200.48xlarge"
+  ],
+  "notes": [
+    "Per-GPU-hour price = instance price / GPU count; bundled CPU/RAM/NVMe biases the DePIN gap upward (documented in master doc).",
+    "On-demand only. Spot price history requires an authenticated AWS account (DescribeSpotPriceHistory, 90-day window) and is collected separately.",
+    "All capacity_status/tenancy/OS variants kept in raw layer; filter to Linux/Shared/Used/NA in processed layer."
+  ]
+}
